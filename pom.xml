@@ -31,6 +31,7 @@
 
     <build>
         <plugins>
+            <!-- Plugin para ensamblar el JAR con dependencias -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -47,6 +48,33 @@
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Plugin para generar Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <destDir>${project.basedir}/docs</destDir>
+                    <encoding>UTF-8</encoding>
+                    <charSet>UTF-8</charSet>
+                    <docencoding>UTF-8</docencoding>
+                    <author>true</author>
+                    <version>true</version>
+                    <use>true</use>
+                    <links>
+                        <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
+                    </links>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
