@@ -58,9 +58,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <destDir>${project.basedir}/docs</destDir>
+                    <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
                     <encoding>UTF-8</encoding>
-                    <charSet>UTF-8</charSet>
                     <docencoding>UTF-8</docencoding>
                     <author>true</author>
                     <version>true</version>
