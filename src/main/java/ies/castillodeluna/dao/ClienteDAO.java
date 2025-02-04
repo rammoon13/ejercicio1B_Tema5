@@ -5,47 +5,69 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO para gestionar las operaciones relacionadas con los clientes en la base de datos.
+ */
 public class ClienteDAO {
     private Connection conn;
 
-    // Constructor que recibe una conexión y la guarda en el atributo conn
+    /**
+     * Constructor que recibe una conexión y la almacena en el atributo conn.
+     *
+     * @param conn Conexión a la base de datos.
+     */
     public ClienteDAO(Connection conn) {
         this.conn = conn;
     }
 
-    // Metodo para agregar un cliente a la BD
+    /**
+     * Agrega un nuevo cliente a la base de datos.
+     *
+     * @param cliente Objeto Cliente con los datos a insertar.
+     * @throws SQLException Si ocurre un error durante la operación.
+     */
     public void agregarCliente(Cliente cliente) throws SQLException {
         String sql = "INSERT INTO Clientes (nombre, email, telefono, id_zona) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, cliente.getNombre());  // Mete el nombre
-            stmt.setString(2, cliente.getEmail());   // Mete el email
-            stmt.setString(3, cliente.getTelefono()); // Mete el tlf
-            stmt.setInt(4, cliente.getIdZona());     // Mete la zona
-            stmt.executeUpdate(); // Ejecuta la query para insertar el cliente
+            stmt.setString(1, cliente.getNombre());  // Establece el nombre
+            stmt.setString(2, cliente.getEmail());   // Establece el email
+            stmt.setString(3, cliente.getTelefono()); // Establece el teléfono
+            stmt.setInt(4, cliente.getIdZona());     // Establece la zona
+            stmt.executeUpdate(); // Ejecuta la consulta para insertar el cliente
         }
     }
 
-    // Metodo para borrar un cliente usando su ID
+    /**
+     * Elimina un cliente de la base de datos según su ID.
+     *
+     * @param idCliente ID del cliente a eliminar.
+     * @throws SQLException Si ocurre un error durante la operación.
+     */
     public void borrarCliente(int idCliente) throws SQLException {
         String sql = "DELETE FROM Clientes WHERE id_cliente = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, idCliente);  // Pone el ID en la query
-            stmt.executeUpdate(); // Ejecuta la query para borrar el cliente
+            stmt.setInt(1, idCliente);  // Establece el ID del cliente
+            stmt.executeUpdate(); // Ejecuta la consulta para eliminar el cliente
         }
     }
 
-    // Metodo para obtener la lista de todos los clientes en la BD
+    /**
+     * Obtiene una lista con todos los clientes registrados en la base de datos.
+     *
+     * @return Lista de clientes.
+     * @throws SQLException Si ocurre un error durante la operación.
+     */
     public List<Cliente> obtenerClientes() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
         String sql = "SELECT * FROM Clientes";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) { // Mientras haya filas en el resultado...
+            while (rs.next()) { // Recorre los resultados de la consulta
                 clientes.add(new Cliente(
-                    rs.getInt("id_cliente"),  // Saca el ID
-                    rs.getString("nombre"),   // Saca el nombre
-                    rs.getString("email"),    // Saca el email
-                    rs.getString("telefono"), // Saca el tlf
-                    rs.getInt("id_zona")      // Saca la zona
+                    rs.getInt("id_cliente"),  // Obtiene el ID
+                    rs.getString("nombre"),   // Obtiene el nombre
+                    rs.getString("email"),    // Obtiene el email
+                    rs.getString("telefono"), // Obtiene el teléfono
+                    rs.getInt("id_zona")      // Obtiene la zona
                 ));
             }
         }
