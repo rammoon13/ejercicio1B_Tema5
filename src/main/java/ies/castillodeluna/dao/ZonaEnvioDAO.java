@@ -5,15 +5,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO para gestionar las operaciones relacionadas con las zonas de envío en la base de datos.
+ */
 public class ZonaEnvioDAO {
     private Connection conn;
 
-    // Constructor que recibe la conexión a la base de datos y la almacena en el atributo conn
+    /**
+     * Constructor que inicializa la conexión con la base de datos.
+     *
+     * @param conn Conexión a la base de datos.
+     */
     public ZonaEnvioDAO(Connection conn) {
         this.conn = conn;
     }
 
-    // Método para obtener todas las zonas de envío de la base de datos
+    /**
+     * Obtiene una lista de todas las zonas de envío registradas en la base de datos.
+     *
+     * @return Lista de objetos {@link ZonaEnvio} con la información de cada zona de envío.
+     * @throws SQLException Si ocurre un error en la operación.
+     */
     public List<ZonaEnvio> obtenerZonasEnvio() throws SQLException {
         List<ZonaEnvio> zonas = new ArrayList<>();
         String sql = "SELECT * FROM Zonas_Envio"; // Consulta para obtener todas las zonas de envío
