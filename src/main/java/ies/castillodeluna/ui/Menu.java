@@ -1,23 +1,22 @@
 package ies.castillodeluna.ui;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import jakarta.persistence.EntityManager;
 import java.util.Scanner;
 
 /**
  * Clase que representa el menú de gestión de pedidos.
  */
 public class Menu {
-    private final MenuHandler menuHandler; // Manejador del menú
-    private final Scanner scanner; // Scanner para leer la entrada del usuario
+    private final MenuHandler menuHandler;
+    private final Scanner scanner;
 
     /**
-     * Constructor que inicializa el menú con la conexión a la base de datos.
+     * Constructor que inicializa el menú con un EntityManager.
      *
-     * @param conn Conexión a la base de datos.
+     * @param em EntityManager para interactuar con la base de datos.
      */
-    public Menu(Connection conn) {
-        this.menuHandler = new MenuHandler(conn);
+    public Menu(EntityManager em) {
+        this.menuHandler = new MenuHandler(em);
         this.scanner = new Scanner(System.in);
     }
 
@@ -40,20 +39,16 @@ public class Menu {
             opcion = scanner.nextInt();
             scanner.nextLine(); // Limpia el buffer del scanner
 
-            try {
-                switch (opcion) {
-                    case 1 -> menuHandler.mostrarZonasEnvio();
-                    case 2 -> menuHandler.mostrarClientes();
-                    case 3 -> menuHandler.mostrarPedidosCliente(scanner);
-                    case 4 -> menuHandler.agregarCliente(scanner);
-                    case 5 -> menuHandler.borrarCliente(scanner);
-                    case 6 -> menuHandler.agregarPedido(scanner);
-                    case 7 -> menuHandler.borrarPedido(scanner);
-                    case 8 -> System.out.println("Saliendo...");
-                    default -> System.out.println("Opción inválida. Intente nuevamente.");
-                }
-            } catch (SQLException e) {
-                System.err.println("Error en la base de datos: " + e.getMessage());
+            switch (opcion) {
+                case 1 -> menuHandler.mostrarZonasEnvio();
+                case 2 -> menuHandler.mostrarClientes();
+                case 3 -> menuHandler.mostrarPedidosCliente(scanner);
+                case 4 -> menuHandler.agregarCliente(scanner);
+                case 5 -> menuHandler.borrarCliente(scanner);
+                case 6 -> menuHandler.agregarPedido(scanner);
+                case 7 -> menuHandler.borrarPedido(scanner);
+                case 8 -> System.out.println("Saliendo...");
+                default -> System.out.println("Opción inválida. Intente nuevamente.");
             }
         } while (opcion != 8);
     }

@@ -7,8 +7,7 @@ import ies.castillodeluna.models.Cliente;
 import ies.castillodeluna.models.Pedido;
 import ies.castillodeluna.models.ZonaEnvio;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,35 +15,31 @@ import java.util.Scanner;
  * Clase encargada de gestionar las operaciones del menú relacionadas con la base de datos.
  */
 public class MenuHandler {
-    private final Connection conn;
+    private final EntityManager em;
 
     /**
-     * Constructor que inicializa la conexión con la base de datos.
+     * Constructor que inicializa la conexión con la base de datos usando Hibernate.
      *
-     * @param conn Conexión a la base de datos.
+     * @param em EntityManager para gestionar las entidades.
      */
-    public MenuHandler(Connection conn) {
-        this.conn = conn;
+    public MenuHandler(EntityManager em) {
+        this.em = em;
     }
 
     /**
      * Muestra todas las zonas de envío registradas en la base de datos.
-     *
-     * @throws SQLException Si ocurre un error en la consulta.
      */
-    public void mostrarZonasEnvio() throws SQLException {
-        ZonaEnvioDAO dao = new ZonaEnvioDAO(conn);
+    public void mostrarZonasEnvio() {
+        ZonaEnvioDAO dao = new ZonaEnvioDAO(em);
         List<ZonaEnvio> zonas = dao.obtenerZonasEnvio();
         zonas.forEach(System.out::println);
     }
 
     /**
      * Muestra todos los clientes registrados en la base de datos.
-     *
-     * @throws SQLException Si ocurre un error en la consulta.
      */
-    public void mostrarClientes() throws SQLException {
-        ClienteDAO dao = new ClienteDAO(conn);
+    public void mostrarClientes() {
+        ClienteDAO dao = new ClienteDAO(em);
         List<Cliente> clientes = dao.obtenerClientes();
         clientes.forEach(System.out::println);
     }
@@ -53,10 +48,9 @@ public class MenuHandler {
      * Muestra los pedidos de un cliente ingresado por el usuario.
      *
      * @param scanner Scanner para leer la entrada del usuario.
-     * @throws SQLException Si ocurre un error en la consulta.
      */
-    public void mostrarPedidosCliente(Scanner scanner) throws SQLException {
-        PedidoDAO dao = new PedidoDAO(conn);
+    public void mostrarPedidosCliente(Scanner scanner) {
+        PedidoDAO dao = new PedidoDAO(em);
         System.out.print("Ingrese el ID del Cliente: ");
         int idCliente = scanner.nextInt();
         List<Pedido> pedidos = dao.obtenerPedidosPorCliente(idCliente);
@@ -65,12 +59,9 @@ public class MenuHandler {
 
     /**
      * Agrega un nuevo cliente con los datos ingresados por el usuario.
-     *
-     * @param scanner Scanner para leer la entrada del usuario.
-     * @throws SQLException Si ocurre un error en la inserción.
      */
-    public void agregarCliente(Scanner scanner) throws SQLException {
-        ClienteDAO dao = new ClienteDAO(conn);
+    public void agregarCliente(Scanner scanner) {
+        ClienteDAO dao = new ClienteDAO(em);
         System.out.print("Nombre del cliente: ");
         String nombre = scanner.nextLine();
         System.out.print("Email: ");
@@ -79,51 +70,70 @@ public class MenuHandler {
         String telefono = scanner.nextLine();
         System.out.print("ID de Zona de Envío: ");
         int idZona = scanner.nextInt();
-        dao.agregarCliente(new Cliente(0, nombre, email, telefono, idZona)); // Se usa 0 como ID porque se generará en la BD
+    
+        ZonaEnvio zona = em.find(ZonaEnvio.class, idZona);
+        if (zona == null) {
+            System.out.println("Error: No existe la zona de envío con ID " + idZona);
+            return;
+        }
+    
+        em.getTransaction().begin();
+        dao.agregarCliente(new Cliente(nombre, email, telefono, zona));
+        em.getTransaction().commit();
+    
         System.out.println("Cliente agregado exitosamente.");
     }
 
     /**
      * Borra un cliente según el ID ingresado por el usuario.
-     *
-     * @param scanner Scanner para leer la entrada del usuario.
-     * @throws SQLException Si ocurre un error en la eliminación.
      */
-    public void borrarCliente(Scanner scanner) throws SQLException {
-        ClienteDAO dao = new ClienteDAO(conn);
+    public void borrarCliente(Scanner scanner) {
+        ClienteDAO dao = new ClienteDAO(em);
         System.out.print("Ingrese el ID del Cliente a eliminar: ");
         int idCliente = scanner.nextInt();
+
+        em.getTransaction().begin();
         dao.borrarCliente(idCliente);
+        em.getTransaction().commit();
+
         System.out.println("Cliente eliminado exitosamente.");
     }
 
     /**
      * Agrega un nuevo pedido con los datos ingresados por el usuario.
-     *
-     * @param scanner Scanner para leer la entrada del usuario.
-     * @throws SQLException Si ocurre un error en la inserción.
      */
-    public void agregarPedido(Scanner scanner) throws SQLException {
-        PedidoDAO dao = new PedidoDAO(conn);
+    public void agregarPedido(Scanner scanner) {
+        PedidoDAO dao = new PedidoDAO(em);
         System.out.print("Ingrese el ID del Cliente: ");
         int idCliente = scanner.nextInt();
         System.out.print("Ingrese el importe total: ");
         double importe = scanner.nextDouble();
-        dao.agregarPedido(new Pedido(0, new java.util.Date(), importe, idCliente)); // Se usa 0 como ID porque se generará en la BD
+    
+        Cliente cliente = em.find(Cliente.class, idCliente);
+        if (cliente == null) {
+            System.out.println("Error: No existe un cliente con ID " + idCliente);
+            return;
+        }
+    
+        em.getTransaction().begin();
+        dao.agregarPedido(new Pedido(new java.util.Date(), importe, cliente));
+        em.getTransaction().commit();
+    
         System.out.println("Pedido agregado exitosamente.");
     }
 
     /**
      * Borra un pedido según el ID ingresado por el usuario.
-     *
-     * @param scanner Scanner para leer la entrada del usuario.
-     * @throws SQLException Si ocurre un error en la eliminación.
      */
-    public void borrarPedido(Scanner scanner) throws SQLException {
-        PedidoDAO dao = new PedidoDAO(conn);
+    public void borrarPedido(Scanner scanner) {
+        PedidoDAO dao = new PedidoDAO(em);
         System.out.print("Ingrese el ID del Pedido a eliminar: ");
         int idPedido = scanner.nextInt();
+
+        em.getTransaction().begin();
         dao.borrarPedido(idPedido);
+        em.getTransaction().commit();
+
         System.out.println("Pedido eliminado exitosamente.");
     }
 }
