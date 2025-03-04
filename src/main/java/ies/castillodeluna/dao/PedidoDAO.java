@@ -21,9 +21,7 @@ public class PedidoDAO {
      * @param pedido Objeto Pedido con los datos a insertar.
      */
     public void agregarPedido(Pedido pedido) {
-        em.getTransaction().begin();
         em.persist(pedido);
-        em.getTransaction().commit();
     }
 
     /**

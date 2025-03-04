@@ -12,9 +12,7 @@ public class ClienteDAO {
     }
 
     public void agregarCliente(Cliente cliente) {
-        em.getTransaction().begin();
         em.persist(cliente);
-        em.getTransaction().commit();
     }
 
     public void borrarCliente(int idCliente) {
