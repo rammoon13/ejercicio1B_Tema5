@@ -30,12 +30,10 @@ public class PedidoDAO {
      * @param idPedido ID del pedido a eliminar.
      */
     public void borrarPedido(int idPedido) {
-        em.getTransaction().begin();
         Pedido pedido = em.find(Pedido.class, idPedido);
         if (pedido != null) {
             em.remove(pedido);
         }
-        em.getTransaction().commit();
     }
 
     /**

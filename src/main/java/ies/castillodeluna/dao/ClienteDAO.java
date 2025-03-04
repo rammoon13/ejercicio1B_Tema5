@@ -16,12 +16,10 @@ public class ClienteDAO {
     }
 
     public void borrarCliente(int idCliente) {
-        em.getTransaction().begin();
         Cliente cliente = em.find(Cliente.class, idCliente);
         if (cliente != null) {
             em.remove(cliente);
         }
-        em.getTransaction().commit();
     }
 
     public List<Cliente> obtenerClientes() {
